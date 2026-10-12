@@ -1,0 +1,14 @@
+Lumen Analytics FAQ (demo document)
+
+Plans and pricing
+Lumen offers three plans. The Starter plan costs USD 19 per user per month, the Team plan costs USD 49 per user per month and includes dashboards sharing. The Enterprise plan has custom pricing.
+Choosing annual billing gives two months free compared to paying monthly. Non-profit organisations receive a 30 percent discount on all plans after verification.
+A 14-day free trial is available for Starter and Team; no credit card is required to start.
+Refunds and cancellation
+Annual subscriptions can be refunded in full within 14 days of purchase. After that period refunds are not available, but the subscription can be cancelled at any time and remains active until the end of the paid period.
+Monthly subscriptions are not refunded, but can be cancelled before the next billing date to avoid further charges.
+To request a refund, contact support from the account owner email address. Refunds are returned to the original payment method within 5 to 10 business days.
+Integrations and data export
+Lumen integrates with Slack, Microsoft Teams and Google Sheets. Alerts can be delivered to a Slack channel when a metric crosses a threshold.
+Data can be exported as CSV or JSON from the Reports page. Exports are limited to 1 million rows per file.
+Single sign-on with SAML is available only on the Enterprise plan. Team plan customers sign in with email and password or Google accounts.

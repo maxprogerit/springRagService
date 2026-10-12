@@ -1,0 +1,20 @@
+# Secrets
+.env
+
+# Build
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local uploads, if file storage is ever used
+/uploads/

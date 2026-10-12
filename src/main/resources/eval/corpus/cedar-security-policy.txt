@@ -1,0 +1,14 @@
+Cedar Systems Information Security Policy (demo document)
+
+Passwords and access
+Passwords must contain at least 14 characters. Password rotation is not required unless a compromise is suspected. Reuse of the last 12 passwords is blocked.
+Multi-factor authentication is mandatory for all administrator accounts and for any access to production systems. Hardware security keys are preferred; authenticator apps are accepted; SMS codes are not allowed.
+Access rights are reviewed every quarter by the system owners. Accounts of departing employees are disabled on their last working day.
+Incident response
+Any suspected security incident must be reported to the security team within 1 hour of discovery using the on-call hotline or the #security-incident channel.
+Incidents are classified as P1 (confirmed data breach or full outage), P2 (limited impact on customers) and P3 (no customer impact). A P1 incident triggers the crisis team and a customer notification within 72 hours, as required by regulation.
+After every P1 and P2 incident a post-mortem document is written within 5 working days. Post-mortems are blameless and focus on process improvements.
+Data retention
+Application logs are kept for 400 days and then deleted automatically. Database backups are kept for 35 days. Customer content is deleted 30 days after the end of the contract, and the deletion is confirmed in writing on request.
+Laptops are encrypted with full-disk encryption. Lost or stolen devices must be reported immediately so that they can be wiped remotely.
+Personal data is processed only in the EU region. Transfers outside the EU require approval from the data protection officer.

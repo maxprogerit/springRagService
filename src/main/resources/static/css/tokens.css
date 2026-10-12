@@ -1,0 +1,23 @@
+/* Design tokens shared with the other portfolio projects. */
+:root {
+  --bg: #130D08;
+  --panel: #1C130C;
+  --panel-active: #261910;
+  --border: #2E2014;
+  --border-strong: #3F2D1D;
+  --text: #F6EDE4;
+  --text-muted: #B89F8A;
+  /* The portfolio value #7D6551 is only 3.4:1 on --panel (WCAG AA needs 4.5:1 for small text).
+     Text uses this lighter tone (4.6:1 on --panel-active, 4.9:1 on --panel); the original stays for non-text accents. */
+  --text-dim: #9A8068;
+  --text-faint: #7D6551;
+  --accent: #FF8A3D;
+  --warn: #FFD84D;
+  --danger: #FF5C5C;
+
+  --font-ui: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --sidebar-w: 250px;
+}

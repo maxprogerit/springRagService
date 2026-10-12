@@ -1,0 +1,104 @@
+spring:
+  application:
+    name: spring-rag-service
+  config:
+    # Local dev: read KEY=VALUE pairs from ./.env. Real OS environment variables still win over it.
+    import: "optional:file:./.env[.properties]"
+  datasource:
+    # No defaults on purpose: a missing DB setting should fail at startup, not connect to a guessed database.
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    # The migration creating chunks.embedding uses ${embeddingDimension}; the app checks it against rag.embedding.dimension.
+    placeholders:
+      embeddingDimension: ${EMBEDDING_DIMENSION:1536}
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: ${SERVER_PORT:8080}
+  # none | framework | native. Set to framework behind a TRUSTED reverse proxy so per-IP rate limits see the client address.
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+rag:
+  top-k: ${TOP_K:5}
+  max-upload-mb: ${MAX_UPLOAD_MB:20}
+  min-similarity: ${MIN_SIMILARITY:0.20}
+  log-payloads: ${LOG_PAYLOADS:false}
+  chunk:
+    size-chars: ${CHUNK_SIZE_CHARS:1000}
+    overlap-chars: ${CHUNK_OVERLAP_CHARS:150}
+  embedding:
+    dimension: ${EMBEDDING_DIMENSION:1536}
+    batch-size: 64
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+    chat-model: ${OPENAI_CHAT_MODEL:gpt-4o-mini}
+    embedding-model: ${OPENAI_EMBEDDING_MODEL:text-embedding-3-small}
+    # Blank = do not send "temperature" (needed for models that reject it).
+    chat-temperature: ${OPENAI_CHAT_TEMPERATURE:0}
+    connect-timeout: 5s
+    read-timeout: 60s
+    max-attempts: 4
+  jwt:
+    secret: ${JWT_SECRET}
+    ttl-minutes: ${JWT_TTL_MINUTES:720}
+  rate-limit:
+    ask-per-minute: ${RATE_LIMIT_ASK_PER_MINUTE:20}
+    auth-per-minute: ${RATE_LIMIT_AUTH_PER_MINUTE:10}
+    upload-per-minute: ${RATE_LIMIT_UPLOAD_PER_MINUTE:20}
+  ingestion:
+    max-pages: 1000
+    threads: 2
+    # Each queued upload keeps its bytes in memory (up to MAX_UPLOAD_MB), so keep this small.
+    queue-capacity: 10
+    # A document still PROCESSING after this long is failed by the periodic sweep (covers crashed instances).
+    processing-timeout-minutes: ${PROCESSING_TIMEOUT_MINUTES:15}
+    # Documents left PROCESSING by an earlier run of the same instance are failed at startup.
+    instance-id: ${INSTANCE_ID:${HOSTNAME:${COMPUTERNAME:local}}}
+  quota:
+    max-collections-per-user: ${MAX_COLLECTIONS_PER_USER:100}
+    max-documents-per-collection: ${MAX_DOCUMENTS_PER_COLLECTION:500}
+    max-storage-mb-per-user: ${MAX_STORAGE_MB_PER_USER:1000}
+  query-log:
+    store-questions: ${STORE_QUESTIONS:true}
+    retention-days: ${QUERY_LOG_RETENTION_DAYS:90}
+  ocr:
+    enabled: ${OCR_ENABLED:false}
+    languages: ${OCR_LANGUAGES:eng}
+    data-path: ${OCR_DATA_PATH:}
+    dpi: ${OCR_DPI:200}
+    max-pages: ${OCR_MAX_PAGES:50}
+  auth:
+    max-failed-logins: ${MAX_FAILED_LOGINS:5}
+    lockout-minutes: ${LOCKOUT_MINUTES:15}
+    require-email-verification: ${REQUIRE_EMAIL_VERIFICATION:false}
+    base-url: ${APP_BASE_URL:http://localhost:8080}
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    from: ${MAIL_FROM:noreply@localhost}
+    start-tls: ${MAIL_STARTTLS:true}

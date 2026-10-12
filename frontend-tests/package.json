@@ -1,0 +1,12 @@
+{
+  "name": "spring-rag-service-frontend-tests",
+  "private": true,
+  "type": "module",
+  "description": "Development-only end-to-end check of the static web UI. The application itself has no Node build.",
+  "scripts": {
+    "test": "node ui.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}

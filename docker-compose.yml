@@ -1,0 +1,38 @@
+# docker compose up -d            -> database + application (UI and API on http://localhost:${APP_PORT:-8080})
+# docker compose up -d db         -> database only, to run the app from your IDE or with `mvn spring-boot:run`
+services:
+  db:
+    # Pinned: the app needs pgvector >= 0.8 (HNSW iterative scan) and checks this at startup.
+    image: pgvector/pgvector:0.8.0-pg16
+    container_name: rag-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-rag}
+      POSTGRES_USER: ${DB_USER:?set DB_USER in .env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    ports:
+      - "${DB_PORT:-54320}:5432"
+    volumes:
+      - rag-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    container_name: rag-app
+    depends_on:
+      db:
+        condition: service_healthy
+    # All settings come from .env; the two below must differ inside the compose network.
+    env_file: .env
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-rag}
+      SERVER_PORT: "8080"
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    restart: unless-stopped
+
+volumes:
+  rag-db-data:

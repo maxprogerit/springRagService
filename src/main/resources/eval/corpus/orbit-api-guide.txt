@@ -1,0 +1,14 @@
+Orbit Public API Guide (demo document)
+
+Authentication
+Every request must carry an API key in the X-Orbit-Key header. Keys are created in the dashboard under Settings, API keys. A key is shown only once at creation time, so store it in a secrets manager.
+Keys expire after 90 days and should be rotated before that date. A new key can be created while the old one is still valid, which allows rotation without downtime.
+Requests without a valid key receive HTTP 401. Requests with a valid key that lacks a required scope receive HTTP 403. Read-only keys cannot call POST, PUT or DELETE endpoints.
+Rate limits
+The API allows 600 requests per minute per key. Bursts of up to 100 requests per second are tolerated for short periods. When the limit is exceeded the server answers with HTTP 429 and a Retry-After header that contains the number of seconds to wait.
+Clients should implement exponential backoff with jitter. Batch endpoints count as one request regardless of the number of items, up to 500 items per call.
+Enterprise customers can request a higher quota through their account manager; limits are raised in steps of 600 requests per minute.
+Webhooks
+Orbit sends webhook events as HTTP POST requests with a JSON body. Every delivery is signed with HMAC SHA-256; the signature is sent in the X-Orbit-Signature header and must be verified using the endpoint secret.
+If your endpoint does not answer with a 2xx status within 10 seconds, the delivery is retried 5 times with exponentially growing delays, starting at 1 minute. After the fifth failure the endpoint is disabled and the account owner receives an email.
+Events are delivered at least once, so handlers must be idempotent. Use the event id field to detect duplicates.

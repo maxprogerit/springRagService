@@ -1,0 +1,159 @@
+{
+  "description": "Golden set for the demo corpus in eval/corpus (all fictional). exact questions reuse distinctive words from the page, paraphrase questions deliberately avoid them, unanswerable questions have no answer in the corpus and are used to calibrate MIN_SIMILARITY.",
+  "questions": [
+    {
+      "type": "exact",
+      "question": "What is the hotel limit per night?",
+      "file": "acme-employee-handbook.txt",
+      "page": 3
+    },
+    {
+      "type": "exact",
+      "question": "How many sick leave days are paid in full?",
+      "file": "acme-employee-handbook.txt",
+      "page": 2
+    },
+    {
+      "type": "exact",
+      "question": "How many days of parental leave does the secondary caregiver get?",
+      "file": "acme-employee-handbook.txt",
+      "page": 2
+    },
+    {
+      "type": "exact",
+      "question": "Which header carries the Orbit API key?",
+      "file": "orbit-api-guide.txt",
+      "page": 1
+    },
+    {
+      "type": "exact",
+      "question": "What does the Retry-After header contain?",
+      "file": "orbit-api-guide.txt",
+      "page": 2
+    },
+    {
+      "type": "exact",
+      "question": "How is the X-Orbit-Signature header computed?",
+      "file": "orbit-api-guide.txt",
+      "page": 3
+    },
+    {
+      "type": "exact",
+      "question": "How many characters must a password contain at least?",
+      "file": "cedar-security-policy.txt",
+      "page": 1
+    },
+    {
+      "type": "exact",
+      "question": "Within how many hours must a security incident be reported?",
+      "file": "cedar-security-policy.txt",
+      "page": 2
+    },
+    {
+      "type": "exact",
+      "question": "How long are application logs kept?",
+      "file": "cedar-security-policy.txt",
+      "page": 3
+    },
+    {
+      "type": "exact",
+      "question": "How much does the Team plan cost per user?",
+      "file": "lumen-product-faq.txt",
+      "page": 1
+    },
+    {
+      "type": "exact",
+      "question": "Is SAML single sign-on available on the Team plan?",
+      "file": "lumen-product-faq.txt",
+      "page": 3
+    },
+    {
+      "type": "exact",
+      "question": "What is the refund window for annual subscriptions?",
+      "file": "lumen-product-faq.txt",
+      "page": 2
+    },
+    {
+      "type": "paraphrase",
+      "question": "Can I work from home all week?",
+      "file": "acme-employee-handbook.txt",
+      "page": 1
+    },
+    {
+      "type": "paraphrase",
+      "question": "How much money can I spend on dinner during a business trip?",
+      "file": "acme-employee-handbook.txt",
+      "page": 3
+    },
+    {
+      "type": "paraphrase",
+      "question": "What happens if I miss the deadline for handing in my receipts?",
+      "file": "acme-employee-handbook.txt",
+      "page": 3
+    },
+    {
+      "type": "paraphrase",
+      "question": "How often do I need to renew my credentials for the developer interface?",
+      "file": "orbit-api-guide.txt",
+      "page": 1
+    },
+    {
+      "type": "paraphrase",
+      "question": "What should my client do when the server tells it to slow down?",
+      "file": "orbit-api-guide.txt",
+      "page": 2
+    },
+    {
+      "type": "paraphrase",
+      "question": "What happens if my endpoint is down when an event is sent?",
+      "file": "orbit-api-guide.txt",
+      "page": 3
+    },
+    {
+      "type": "paraphrase",
+      "question": "Which kind of second login factor is not accepted?",
+      "file": "cedar-security-policy.txt",
+      "page": 1
+    },
+    {
+      "type": "paraphrase",
+      "question": "Who has to be informed when customer information leaks and how fast?",
+      "file": "cedar-security-policy.txt",
+      "page": 2
+    },
+    {
+      "type": "paraphrase",
+      "question": "How long after a customer leaves are their files erased?",
+      "file": "cedar-security-policy.txt",
+      "page": 3
+    },
+    {
+      "type": "paraphrase",
+      "question": "Is there a discount for charities?",
+      "file": "lumen-product-faq.txt",
+      "page": 1
+    },
+    {
+      "type": "paraphrase",
+      "question": "Can I get my money back if I stop using the product after two months?",
+      "file": "lumen-product-faq.txt",
+      "page": 2
+    },
+    {
+      "type": "paraphrase",
+      "question": "Can I send notifications to a chat tool?",
+      "file": "lumen-product-faq.txt",
+      "page": 3
+    }
+  ],
+  "unanswerable": [
+    "What is the capital of Australia?",
+    "How do I bake sourdough bread at home?",
+    "Who won the football world cup in 2018?",
+    "What is the boiling point of mercury?",
+    "Explain how photosynthesis works.",
+    "What is the best programming language for beginners?",
+    "How tall is Mount Everest?",
+    "Which planet has the most moons?"
+  ]
+}
