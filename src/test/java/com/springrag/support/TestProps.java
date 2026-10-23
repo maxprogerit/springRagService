@@ -27,6 +27,7 @@ public final class TestProps {
                 new RagProperties.QueryLogging(true, 90),
                 new RagProperties.Ocr(false, "eng", "", 200, 50),
                 new RagProperties.Auth(5, 15, false, "http://localhost:8080"),
-                new RagProperties.Mail("", 587, "", "", "noreply@example.com", true));
+                new RagProperties.Mail("", 587, "", "", "noreply@example.com", true),
+                new RagProperties.Retrieval(3000));
     }
 }

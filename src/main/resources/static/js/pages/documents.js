@@ -115,7 +115,6 @@ export async function mount(root, { collectionId, navigate }) {
     try {
       // Re-read every page that is on screen, so status changes (PROCESSING -> READY) show up everywhere.
       const pages = Math.max(1, Math.ceil(shown / PAGE_SIZE));
-      const stats = await api.stats(collection.id);
       let docs = [];
       let total = 0;
       for (let p = 0; p < pages; p++) {
@@ -124,6 +123,8 @@ export async function mount(root, { collectionId, navigate }) {
         docs = docs.concat(page.items);
         if (docs.length >= total) break;
       }
+      // Statistics are read after the list, so they are never older than what the table shows.
+      const stats = await api.stats(collection.id);
       if (disposed) return;
       renderDocuments(docs, total);
       renderStats(stats);

@@ -41,8 +41,16 @@ const authHeader = () => ({ Authorization: `Bearer ${JSON.parse(w.sessionStorage
 try {
   await import(pathToFileURL(`${STATIC}/js/main.js`).href);
 
-  // ----- sign in / register -----
+  // ----- landing page, then sign in / register -----
+  await waitFor(() => q('.lp'), 'landing page');
+  ok('logged-out visitors see the landing page first: no sidebar, no sign-in form',
+    q('.sidebar') === null && q('.auth-card') === null && /Vector and\s*keyword,\s*fused in the\s*open\./.test(q('h1').textContent));
+  ok('the landing has five sections with a dot each', qa('.lp-section').length === 5 && qa('.lp-dots button').length === 5);
+  ok('exactly two floating chips frame the hero monitor', qa('#lp-hero .lp-chip').length === 2);
+  ok('the call to action leads to the sign-in form', q('.lp-hero .btn-primary').getAttribute('href') === '#/signin');
+  go('#/signin');
   await waitFor(() => q('.auth-card'), 'auth card');
+  ok('the landing is gone once the sign-in form is shown', q('.lp') === null);
   ok('logged-out users see the sign-in card, no sidebar', q('.sidebar') === null && /Spring\s*RAG\s*Service/.test(q('.auth-card .logo').textContent));
   await waitFor(() => q('a[href="#/forgot"]') !== null, 'forgot link element');
   ok('"Forgot password" is hidden when the server has no e-mail configured', q('a[href="#/forgot"]').hidden === true);
@@ -79,7 +87,8 @@ try {
   // ----- documents -----
   go(`#/documents/${colId}`);
   await waitFor(() => q('.dropzone'), 'dropzone');
-  ok('documents page shows upload zone and empty table state', /No data yet/.test(q('.table-wrap').textContent));
+  await waitFor(() => /No data yet/.test(q('.table-wrap').textContent), 'empty documents table');
+  ok('documents page shows upload zone and empty table state', true);
   ok('upload zone lists the supported types', /DOCX/.test(q('.dropzone').textContent) && /HTML/.test(q('.dropzone').textContent));
   const evil = 'Refunds are possible within 14 days. <b>bold</b> <img src=x onerror=alert(1)> end of policy.';
   const html = '<html><head><title>Plans</title><script>steal()</script></head><body><p>The Team plan costs 49 dollars per user.</p></body></html>';
@@ -99,6 +108,7 @@ try {
   // ----- ask: streaming, citations, follow-up -----
   go(`#/ask/${colId}`);
   await waitFor(() => q('#question'), 'ask form');
+  ok('the Ask page lists the documents the answers come from', /2 documents/.test(q('.files-card').textContent) && /refund-policy.txt/.test(q('.files-card').textContent) && /plans.html/.test(q('.files-card').textContent), q('.files-card')?.textContent);
   q('#question').value = 'How many days for refunds?'; submit(q('.ask-form'));
   const chip = await waitFor(() => q('.msg-assistant .chip'), 'citation chip');
   ok('answer has a citation chip like "[1] file · p.N"', /^\[\d\] refund-policy\.txt · p\.1$/.test(chip.textContent), chip.textContent);
@@ -119,6 +129,7 @@ try {
   await waitFor(() => qa('.msg-assistant').length === 3 && qa('.msg-assistant')[2].getAttribute('aria-busy') !== 'true', 'third answer');
   const nf = qa('.msg-assistant')[2];
   ok('insufficient context shows the exact not-found sentence and no chips', nf.classList.contains('is-notfound') && nf.querySelector('.msg-text').textContent === 'I could not find this in the uploaded documents.' && nf.querySelector('.chip') === null);
+  ok('a not-found answer suggests what the documents contain', /Ask about what the documents contain/.test(nf.querySelector('.msg-hint')?.textContent || ''));
   click(qa('.page-tools button').find((b) => /New conversation/.test(b.textContent)));
   ok('"New conversation" clears the chat', qa('.msg').length === 0 && /No data yet/.test(q('.chat-log').textContent));
 
@@ -133,7 +144,7 @@ try {
 
   // ----- public pages from e-mail links -----
   go('#/settings');
-  await waitFor(() => /UP/.test(qa('.kv')[2]?.textContent || ''), 'health UP');
+  await waitFor(() => /UP/.test(qa('.kv')[1]?.textContent || ''), 'health UP');
   ok('settings shows the account and server health UP', qa('.kv')[0].textContent.includes(email));
 
   // change password keeps this device signed in
@@ -154,11 +165,11 @@ try {
   await waitFor(() => qa('.grid-cards .card').length >= 2, 'cards again');
   const before27 = qa('.grid-cards .card').length;
   click(qa('.grid-cards .card button.btn-danger')[0]);
-  await waitFor(() => qa('.grid-cards .card').length < before27 || /Showing 26/.test(q('.more-row').textContent), 'card removed');
+  await waitFor(() => qa('.grid-cards .card').length < before27 || /of 26/.test(q('.more-row').textContent), 'card removed');
   ok('deleting a collection removes its card', true);
   go('#/settings');
-  await waitFor(() => q('.card-actions button.btn-danger'), 'sign out everywhere button');
-  click(q('.card-actions button.btn-danger'));
+  await waitFor(() => q('#current-password'), 'settings page rendered');
+  click(qa('.card-actions button').find((b) => /everywhere/.test(b.textContent)));
   await waitFor(() => q('.auth-card'), 'back to auth');
   ok('sign out everywhere returns to the sign-in card and clears sessionStorage', w.sessionStorage.getItem('rag.session') === null);
   const relog = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: 'a-brand-new-password' }) });
@@ -178,6 +189,7 @@ try {
   ok('an invalid verification link is rejected with a clear message', true);
 } catch (e) {
   console.log('ERROR', e.message);
+  console.log('toasts:', qa('.toast').map((t) => t.textContent), ' url:', w.location.hash, ' session:', !!w.sessionStorage.getItem('rag.session'));
   failures++;
 }
 console.log(failures === 0 ? '\nALL UI CHECKS PASSED' : `\n${failures} UI CHECK(S) FAILED`);

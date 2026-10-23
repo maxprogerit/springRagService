@@ -31,7 +31,8 @@ public record RagProperties(
         @Valid @NotNull QueryLogging queryLog,
         @Valid @NotNull Ocr ocr,
         @Valid @NotNull Auth auth,
-        @Valid @NotNull Mail mail) {
+        @Valid @NotNull Mail mail,
+        @Valid @NotNull Retrieval retrieval) {
 
     // Upper bound: embedding models accept at most ~8k tokens per input; 8000 characters stays safely below it.
     public record Chunk(@Min(100) @Max(8000) int sizeChars, @Min(0) int overlapChars) {
@@ -99,6 +100,12 @@ public record RagProperties(
      */
     public record Auth(@Min(1) int maxFailedLogins, @Min(1) int lockoutMinutes, boolean requireEmailVerification,
                        @NotBlank String baseUrl) {}
+
+    /**
+     * @param exactSearchMaxChunks collections with at most this many chunks are searched exactly (no index, never
+     *                             misses a row); bigger ones use the approximate HNSW index. 0 = always HNSW.
+     */
+    public record Retrieval(@Min(0) int exactSearchMaxChunks) {}
 
     /** SMTP settings. A blank host disables e-mail (password reset and verification are then unavailable). */
     public record Mail(String host, @Min(1) int port, String username, String password, String from, boolean startTls) {

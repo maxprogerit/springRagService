@@ -20,7 +20,7 @@ public class OpenAiChatClient implements ChatClient {
     public OpenAiChatClient(OpenAiHttp http, RagProperties props) {
         this.http = http;
         this.model = props.openai().chatModel();
-        this.temperature = props.openai().chatTemperature();
+        this.temperature = temperatureFor(model, props.openai().chatTemperature());
     }
 
     @Override
@@ -47,6 +47,19 @@ public class OpenAiChatClient implements ChatClient {
             throw new OpenAiException(0, "OpenAI returned no answer text.");
         }
         return full.toString();
+    }
+
+    /**
+     * Grounded answers should be as deterministic as possible, hence 0. Reasoning models (gpt-5 family, o-series)
+     * reject any temperature other than their default, so nothing is sent for them unless one is configured explicitly.
+     */
+    static Double temperatureFor(String model, Double configured) {
+        if (configured != null) {
+            return configured;
+        }
+        String name = model.toLowerCase(java.util.Locale.ROOT);
+        boolean reasoning = name.startsWith("gpt-5") || name.matches("o[0-9].*");
+        return reasoning ? null : 0.0;
     }
 
     private Map<String, Object> body(String systemPrompt, String userPrompt, boolean stream) {

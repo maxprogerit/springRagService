@@ -56,10 +56,11 @@ rag:
     base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
     chat-model: ${OPENAI_CHAT_MODEL:gpt-4o-mini}
     embedding-model: ${OPENAI_EMBEDDING_MODEL:text-embedding-3-small}
-    # Blank = do not send "temperature" (needed for models that reject it).
-    chat-temperature: ${OPENAI_CHAT_TEMPERATURE:0}
+    # Blank = automatic: 0 for models that accept it, omitted for reasoning models (gpt-5, o1, o3, o4), which only
+    # support their default. A number is always sent as given.
+    chat-temperature: ${OPENAI_CHAT_TEMPERATURE:}
     connect-timeout: 5s
-    read-timeout: 60s
+    read-timeout: 120s
     max-attempts: 4
   jwt:
     secret: ${JWT_SECRET}
@@ -95,6 +96,8 @@ rag:
     lockout-minutes: ${LOCKOUT_MINUTES:15}
     require-email-verification: ${REQUIRE_EMAIL_VERIFICATION:false}
     base-url: ${APP_BASE_URL:http://localhost:8080}
+  retrieval:
+    exact-search-max-chunks: ${EXACT_SEARCH_MAX_CHUNKS:3000}
   mail:
     host: ${MAIL_HOST:}
     port: ${MAIL_PORT:587}

@@ -1,6 +1,7 @@
 import { api, onUnauthorized } from './api.js';
 import { clear, h, icon, toast } from './dom.js';
 import { getCurrentCollection, getSession, setSession } from './state.js';
+import * as landing from './pages/landing.js';
 import * as auth from './pages/auth.js';
 import * as forgot from './pages/forgot.js';
 import * as reset from './pages/reset.js';
@@ -34,7 +35,8 @@ function parseHash() {
   if (Object.hasOwn(PUBLIC_PAGES, route)) return { route, param: param || '', public: true };
   const known = Object.hasOwn(PAGES, route) ? route : 'collections';
   const numeric = Number(param);
-  return { route: known, collectionId: Number.isInteger(numeric) && numeric > 0 ? numeric : null, public: false };
+  // An empty hash is the front door: visitors without a session get the landing page there, and the sign-in form at #/signin.
+  return { route: known, collectionId: Number.isInteger(numeric) && numeric > 0 ? numeric : null, public: false, landing: route === '' };
 }
 
 export function navigate(path) {
@@ -88,6 +90,12 @@ function render() {
     const item = PUBLIC_PAGES[where.route];
     document.title = `${item.title} · Spring RAG Service`;
     mountPage(item, app, { param: where.param, navigate }, token);
+    return;
+  }
+
+  if (!session && where.landing) {
+    document.title = 'Spring RAG Service';
+    disposeCurrent = landing.mount(app);
     return;
   }
 

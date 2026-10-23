@@ -1,7 +1,7 @@
 # Front-end check (development only)
 
 Runs the real UI modules in [jsdom](https://github.com/jsdom/jsdom) against a **running** server and clicks through:
-sign-up, collections (with paging), uploads, streamed answers with citations, follow-up questions, the retrieval
+the landing page that logged-out visitors see first, sign-up, collections (with paging), uploads, streamed answers with citations, follow-up questions, the retrieval
 inspector, password change, "sign out everywhere" and the e-mail link pages.
 
 The server needs an OpenAI-compatible endpoint. Without an API key use the stand-in in `dev/` (it is not an AI):

@@ -190,9 +190,9 @@ class OpenAiClientsTest {
     }
 
     @Test
-    void chatOmitsTemperatureWhenNotConfigured() {
+    void chatUsesZeroTemperatureAutomaticallyForOrdinaryModels() {
         server.expect(requestTo(BASE + "/chat/completions"))
-                .andExpect(jsonPath("$.temperature").doesNotExist())
+                .andExpect(jsonPath("$.temperature").value(0.0))
                 .andRespond(withSuccess("{\"choices\":[{\"message\":{\"content\":\"ok\"}}]}", MediaType.APPLICATION_JSON));
 
         new OpenAiChatClient(http, props("m", null)).complete("s", "u");

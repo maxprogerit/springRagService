@@ -1,5 +1,6 @@
 package com.springrag.retrieval;
 
+import com.springrag.common.RagProperties;
 import com.springrag.embedding.Vectors;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,6 +24,21 @@ public class ChunkSearchRepository {
             ORDER BY c.sim DESC, c.id
             """;
 
+    // Exact variant for small collections: the CTE is read through the collection_id index and sorted by true distance,
+    // so no approximate index is involved and no row can be missed.
+    private static final String EXACT_VECTOR_SQL = """
+            WITH scope AS MATERIALIZED (
+                SELECT id, document_id, page_number, chunk_index, text, embedding FROM chunks WHERE collection_id = ?
+            )
+            SELECT c.id, c.document_id, d.filename, c.page_number, c.chunk_index, c.text, c.sim
+            FROM (SELECT id, document_id, page_number, chunk_index, text, 1 - (embedding <=> ?::vector) AS sim
+                  FROM scope
+                  ORDER BY embedding <=> ?::vector
+                  LIMIT ?) c
+            JOIN documents d ON d.id = c.document_id
+            ORDER BY c.sim DESC, c.id
+            """;
+
     private static final String KEYWORD_SQL = """
             SELECT c.id, c.document_id, d.filename, c.page_number, c.chunk_index, c.text, r.rank
             FROM (SELECT id, document_id, page_number, chunk_index, text, ts_rank_cd(tsv, q.query) AS rank
@@ -40,9 +56,11 @@ public class ChunkSearchRepository {
             rs.getDouble(7));
 
     private final JdbcTemplate jdbc;
+    private final int exactSearchMaxChunks;
 
-    public ChunkSearchRepository(JdbcTemplate jdbc) {
+    public ChunkSearchRepository(JdbcTemplate jdbc, RagProperties props) {
         this.jdbc = jdbc;
+        this.exactSearchMaxChunks = props.retrieval().exactSearchMaxChunks();
     }
 
     public int countChunks(long collectionId) {
@@ -57,10 +75,13 @@ public class ChunkSearchRepository {
      */
     @Transactional(readOnly = true)
     public List<ScoredChunk> vectorSearch(long collectionId, float[] query, int limit) {
+        String literal = Vectors.toLiteral(query);
+        if (countChunks(collectionId) <= exactSearchMaxChunks) {
+            return jdbc.query(EXACT_VECTOR_SQL, MAPPER, collectionId, literal, literal, limit);
+        }
         // SET LOCAL cannot take bind parameters; limit is an int computed by us, never user text.
         jdbc.execute("SET LOCAL hnsw.iterative_scan = strict_order");
         jdbc.execute("SET LOCAL hnsw.ef_search = " + Math.max(100, limit));
-        String literal = Vectors.toLiteral(query);
         return jdbc.query(VECTOR_SQL, MAPPER, literal, collectionId, literal, limit);
     }
 

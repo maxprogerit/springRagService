@@ -22,6 +22,12 @@
         <pdfbox.version>3.0.8</pdfbox.version>
         <bucket4j.version>8.21.0</bucket4j.version>
         <jsoup.version>1.23.2</jsoup.version>
+        <!-- Patch-level overrides of Spring Boot's managed versions, for advisories found by an OSV scan
+             (Tomcat auth bypasses, Jackson DoS/ReDoS, PostgreSQL driver channel-binding downgrade, log4j-api). -->
+        <jackson-bom.version>2.21.7</jackson-bom.version>
+        <tomcat.version>10.1.61</tomcat.version>
+        <postgresql.version>42.7.14</postgresql.version>
+        <log4j2.version>2.25.5</log4j2.version>
         <tess4j.version>5.20.0</tess4j.version>
     </properties>
 

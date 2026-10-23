@@ -19,6 +19,17 @@ export async function mount(root, { collectionId, navigate }) {
     return undefined;
   }
 
+  // Show what the chat can answer from, so it is obvious the collection and its files are loaded.
+  let documents = { items: [], total: 0 };
+  try {
+    documents = await api.listDocuments(collection.id, { size: 200 });
+  } catch {
+    // The chat still works without the file list.
+  }
+  const ready = documents.items.filter((d) => d.status === 'READY');
+  const processing = documents.items.filter((d) => d.status === 'PROCESSING').length;
+  const failed = documents.items.filter((d) => d.status === 'FAILED').length;
+
   const log = h('div', { class: 'chat-log', role: 'log', 'aria-live': 'polite', 'aria-label': 'Conversation' },
     emptyState('No data yet', 'Ask a question about the documents in this collection. Follow-up questions are understood in context.'));
   const question = h('textarea', { class: 'input', id: 'question', rows: 2, maxlength: 2000, required: true, placeholder: 'What does the contract say about termination?' });
@@ -29,6 +40,25 @@ export async function mount(root, { collectionId, navigate }) {
   let opener = null;
   /** Earlier turns, sent with the next question so a follow-up like "and for the Team plan?" can be understood. */
   let history = [];
+
+  function filesCard() {
+    const status = [
+      `${ready.length} ready`,
+      processing ? `${processing} processing` : null,
+      failed ? `${failed} failed` : null,
+    ].filter(Boolean).join(' · ');
+    return h('section', { class: 'card files-card', 'aria-label': 'Documents in this collection' },
+      h('div', { class: 'card-head' },
+        h('div', null, h('span', { class: 'label' }, 'Answers come from'), h('h2', null, `${documents.total} document${documents.total === 1 ? '' : 's'}`),
+          h('span', { class: 'dim mono' }, status)),
+        h('a', { class: 'btn btn-small', href: `#/documents/${collection.id}` }, 'Manage documents')),
+      ready.length === 0
+        ? h('p', { class: 'notice' }, documents.total === 0
+          ? 'This collection has no documents yet. Upload some on the Documents page, then come back.'
+          : 'No document is ready yet. Processing may still be running; check the Documents page.')
+        : h('div', { class: 'msg-citations', role: 'list' },
+          ready.map((d) => h('span', { class: 'chip chip-static', role: 'listitem', title: d.filename }, `${d.filename} · ${d.pageCount ?? '?'} p.`))));
+  }
 
   // ----- source panel -----
   const panelTitle = h('h2', { id: 'panel-title' }, 'Source');
@@ -116,6 +146,9 @@ export async function mount(root, { collectionId, navigate }) {
     return h('div', { class: `msg msg-assistant${notFound ? ' is-notfound' : ''}` },
       result.standaloneQuestion ? h('p', { class: 'dim mono msg-rewrite' }, `Understood as: ${result.standaloneQuestion}`) : null,
       notFound ? h('p', { class: 'msg-text' }, result.answer || NOT_FOUND) : answerNode(result.answer, result.citations),
+      notFound && ready.length > 0
+        ? h('p', { class: 'dim msg-hint' }, `Ask about what the documents contain, for example: ${ready.slice(0, 3).map((d) => d.filename).join(', ')}.`)
+        : null,
       chipRow(result.citations),
       h('div', { class: 'msg-meta' },
         h('span', null, `vector ${result.retrieval.vectorHits}`),
@@ -174,6 +207,7 @@ export async function mount(root, { collectionId, navigate }) {
 
   root.append(
     pageHeader('Chat', 'Ask', [collectionPicker(list, collection.id, (id) => navigate(`ask/${id}`)), newChat]),
+    filesCard(),
     h('div', { class: 'chat-layout' },
       log,
       h('form', { class: 'ask-form', onSubmit },

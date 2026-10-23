@@ -11,7 +11,9 @@ body {
   font-weight: 500;
   font-size: 15px;
   line-height: 1.5;
-  border-top: 8px solid var(--accent);
+  /* A hairline, not a banner: a full-saturation 8px bar on every page competed with the actual content. */
+  border-top: 2px solid var(--accent-soft);
+  border-top-color: color-mix(in srgb, var(--accent-soft) 55%, transparent);
 }
 
 h1, h2, h3 { margin: 0; font-weight: 700; line-height: 1.2; }
@@ -47,12 +49,12 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .accent { color: var(--accent); }
 
 /* ---------- Shell ---------- */
-.shell { display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); min-height: calc(100vh - 8px); }
+.shell { display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); min-height: calc(100vh - 2px); }
 
 .sidebar {
   background: var(--panel); border-right: 1px solid var(--border);
   padding: 24px 16px; display: flex; flex-direction: column; gap: 28px;
-  position: sticky; top: 0; align-self: start; height: calc(100vh - 8px); overflow-y: auto;
+  position: sticky; top: 0; align-self: start; height: calc(100vh - 2px); overflow-y: auto;
 }
 .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; padding: 0 8px; }
 .nav { display: flex; flex-direction: column; gap: 4px; }
@@ -106,7 +108,7 @@ td.num, th.num { text-align: right; }
 .btn:hover { background: var(--panel-active); }
 .btn:disabled { opacity: .55; cursor: not-allowed; }
 .btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-.btn-primary:hover { background: #ff9d5c; border-color: #ff9d5c; }
+.btn-primary:hover { background: var(--accent-soft); border-color: var(--accent-soft); }
 .btn-danger { color: var(--danger); border-color: var(--danger); }
 .btn-danger:hover { background: rgba(255, 92, 92, .12); }
 .btn-small { padding: 5px 10px; font-size: 13px; }
@@ -169,11 +171,11 @@ select.input {
 .notice-error { border-color: var(--danger); color: var(--danger); }
 
 #toasts { position: fixed; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 60; max-width: min(420px, calc(100vw - 32px)); }
-.toast { background: var(--panel-active); border: 1px solid var(--border-strong); border-left: 4px solid var(--accent); border-radius: var(--radius-sm); padding: 10px 14px; overflow-wrap: anywhere; }
+.toast { background: var(--panel-active); border: 1px solid var(--border-strong); border-left: 4px solid var(--accent-soft); border-radius: var(--radius-sm); padding: 10px 14px; overflow-wrap: anywhere; }
 .toast-error { border-left-color: var(--danger); }
 
 /* ---------- Auth ---------- */
-.auth-wrap { min-height: calc(100vh - 8px); display: grid; place-items: center; padding: 24px 16px; }
+.auth-wrap { min-height: calc(100vh - 2px); display: grid; place-items: center; padding: 24px 16px; }
 .auth-card { width: min(420px, 100%); }
 .auth-card .logo { padding: 0; font-size: 26px; margin-bottom: 6px; }
 .auth-card form { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
@@ -186,7 +188,7 @@ select.input {
   display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; cursor: pointer;
   border: 1px dashed var(--border-strong); border-radius: var(--radius); padding: 28px 16px; color: var(--text-muted);
 }
-.dropzone:hover, .dropzone.is-over, .dropzone:focus-within { border-color: var(--accent); background: var(--panel-active); color: var(--text); }
+.dropzone:hover, .dropzone.is-over, .dropzone:focus-within { border-color: var(--accent-soft); background: var(--panel-active); color: var(--text); }
 .dropzone svg { color: var(--accent); }
 
 /* ---------- Chat ---------- */
@@ -205,7 +207,7 @@ select.input {
 .ask-form .field-topk { width: 90px; }
 
 .side-panel {
-  position: fixed; top: 8px; right: 0; bottom: 0; width: min(420px, 100vw); z-index: 50;
+  position: fixed; top: 2px; right: 0; bottom: 0; width: min(420px, 100vw); z-index: 50;
   background: var(--panel); border-left: 1px solid var(--border-strong); padding: 20px; overflow-y: auto;
   display: flex; flex-direction: column; gap: 16px;
 }
@@ -248,3 +250,7 @@ select.input {
 .more-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 16px; }
 .msg-rewrite { margin-bottom: 8px; font-size: 12px; }
 .msg-assistant[aria-busy="true"] { border-style: dashed; }
+
+.files-card { margin-bottom: 16px; }
+.files-card h2 { font-size: 20px; margin: 2px 0; }
+.msg-hint { margin-top: 10px; font-size: 13px; }
